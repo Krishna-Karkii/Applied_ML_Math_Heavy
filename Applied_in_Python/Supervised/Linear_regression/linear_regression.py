@@ -4,13 +4,14 @@ import math
 
 
 class LinearRegressionStochastic:
-    def __init__(self, features, target, f_column: int):
+    def __init__(self, features, target, f_column: int, epoch: int):
         self.features = features
         self.target = target
         self.params = np.zeros(f_column) # initializing all weights + bias to zeros
         self.bias = 0
         self.alpha = 0.01 # Learning rate
         self.f_column = f_column
+        self.epoch = epoch
 
     def _predict_yhat(self, features):
         y_predict = 0
@@ -25,10 +26,11 @@ class LinearRegressionStochastic:
         return cost
     
     def _gradient_descent(self):
-        for row, target in zip(self.features, self.target):
-            for j in range(self.f_column):
-                self.params[j] = self.params[j] - (self.alpha * (self._calculate_cost(row, target_y=target) * row[j]))
-            self.bias = self.bias - (self.alpha * (self._calculate_cost(row, target_y=target)))
+        for i in range(self.epoch):
+            for row, target in zip(self.features, self.target):
+                for j in range(self.f_column):
+                    self.params[j] = self.params[j] - (self.alpha * (self._calculate_cost(row, target_y=target) * row[j]))
+                self.bias = self.bias - (self.alpha * (self._calculate_cost(row, target_y=target)))
     
     def fit_data(self):
         self._gradient_descent()
@@ -40,14 +42,14 @@ class LinearRegressionStochastic:
 
 
 if __name__ == "__main__":
-    data = pd.read_csv("Applied_in_Python/Supervised/data.csv")
+    data = pd.read_csv("Applied_in_Python/Supervised/Linear_regression/data.csv")
     df_min = data.min()
     df_max = data.max()
     df_mean = data.mean()
     data = (data - data.mean()) / (data.max() - data.min())
     targets = data["House_Price"]
     data = data.drop("House_Price", axis=1)
-    lr = LinearRegressionStochastic(np.array(data[1:]), np.array(targets[1:]), 4)
+    lr = LinearRegressionStochastic(np.array(data[1:]), np.array(targets[1:]), 4, 3)
 
     def min_max(value, column):
         ret = (value - df_mean[column]) * (df_max[column] - df_min[column])
@@ -58,4 +60,7 @@ if __name__ == "__main__":
                                     bedrooms=min_max(4, "Bedrooms"), 
                                     age=min_max(3, "Age_years"), 
                                     distance=min_max(13, "Distance_city_km"))
-    print(prediction * (df_max["House_Price"] - df_min["House_Price"]) + df_min["House_Price"])
+    
+    print(prediction)
+    print(lr.bias)
+    print(lr.params)
