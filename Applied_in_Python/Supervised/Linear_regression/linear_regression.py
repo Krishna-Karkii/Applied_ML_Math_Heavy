@@ -2,6 +2,11 @@ import numpy as np
 import pandas as pd
 import math
 
+# declaring to avoid runtime issues
+df_min = pd.DataFrame()
+df_max = pd.DataFrame()
+df_mean = pd.DataFrame()
+
 
 class LinearRegressionStochastic:
     def __init__(self, features, target, f_column: int, epoch: int):
@@ -40,27 +45,32 @@ class LinearRegressionStochastic:
         output = self._predict_yhat(features)
         return output
 
-
-if __name__ == "__main__":
+def run_regression(data: pd.DataFrame, f_column: int, epoch):
     data = pd.read_csv("Applied_in_Python/Supervised/Linear_regression/data.csv")
     df_min = data.min()
     df_max = data.max()
     df_mean = data.mean()
-    data = (data - data.mean()) / (data.max() - data.min())
+    data = (data - df_mean) / (df_max - df_min)
     targets = data["House_Price"]
     data = data.drop("House_Price", axis=1)
-    lr = LinearRegressionStochastic(np.array(data[1:]), np.array(targets[1:]), 4, 3)
-
-    def min_max(value, column):
-        ret = (value - df_mean[column]) * (df_max[column] - df_min[column])
-        return ret
-
-    lr.fit_data()
-    prediction = lr.show_predictions(size=min_max(1050, "Size_sqft"),
-                                    bedrooms=min_max(4, "Bedrooms"), 
-                                    age=min_max(3, "Age_years"), 
-                                    distance=min_max(13, "Distance_city_km"))
+    lr = LinearRegressionStochastic(np.array(data[1:]), np.array(targets[1:]), f_column, int(epoch))
+    return data, df_min, df_max, df_mean, lr
     
-    print(prediction)
-    print(lr.bias)
-    print(lr.params)
+
+def min_max(value, column):
+    ret = (value - df_mean[column]) * (df_max[column] - df_min[column])
+    return ret
+
+
+# data = pd.read_csv("Applied_in_Python/Supervised/Linear_regression/data.csv")
+# df_min, df_max, df_mean, lr = run_regression(data, 4, 3)
+
+# lr.fit_data()
+# prediction = lr.show_predictions(size=min_max(1050, "Size_sqft"),
+#                                 bedrooms=min_max(4, "Bedrooms"), 
+#                                 age=min_max(3, "Age_years"), 
+#                                 distance=min_max(13, "Distance_city_km"))
+
+# print(prediction)
+# print(lr.bias)
+# print(lr.params)
