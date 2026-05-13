@@ -3,8 +3,8 @@ import matplotlib.pyplot as pt
 import numpy as np
 import pandas as pd
 
-from linear_regression import LinearRegressionStochastic, run_regression, min_max
-from pca import reduce_dim_pca
+from Applied_in_Python.Supervised.Linear_regression.src.linear_regression import LinearRegressionStochastic, run_regression, min_max
+from Applied_in_Python.Supervised.Linear_regression.src.pca import reduce_dim_pca
 
 st.title("Applied Linear Regression on House Prices.")
 st.space("xxsmall")
